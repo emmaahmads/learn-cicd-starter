@@ -1,4 +1,4 @@
-name: Go
+name: go
 
 on:
   pull_request:
@@ -18,8 +18,27 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Go version
-        run: go version
-      
-      - name: Tests
+      - name: Run unit tests
         run: go test ./... -cover
+
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Check formatting
+        run: test -z $(go fmt ./...)
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: Run staticcheck
+        run: staticcheck ./...
